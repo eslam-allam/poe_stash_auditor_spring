@@ -1,0 +1,32 @@
+{"properties": [
+  {
+    "name": "poe.oauth.url",
+    "type": "java.lang.String",
+    "description": "Base link for path of exile OAuth API"
+  },
+  {
+    "name": "redirect.uri",
+    "type": "java.lang.String",
+    "description": "redirect uri after getting code and state from poe/authorize"
+  },
+  {
+    "name": "client.id",
+    "type": "java.lang.String",
+    "description": "Id of poe_stash_auditor app"
+  },
+  {
+    "name": "client.secret",
+    "type": "java.lang.String",
+    "description": "Secret of poe_stash_auditor app"
+  },
+  {
+    "name": "poe.authorize.url",
+    "type": "java.lang.String",
+    "description": "Used to get authorization code."
+  },
+  {
+    "name": "poe.token.url",
+    "type": "java.lang.String",
+    "description": "used to Get access token"
+  }
+]}
