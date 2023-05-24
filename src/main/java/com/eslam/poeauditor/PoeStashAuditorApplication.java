@@ -5,12 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import com.eslam.poeauditor.model.UserState;
-import com.eslam.poeauditor.repository.UserRepository;
-import com.eslam.poeauditor.repository.UserStateRepository;
+import io.github.cdimascio.dotenv.Dotenv;
+
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.eslam.poeauditor.*"})
@@ -19,6 +17,8 @@ import com.eslam.poeauditor.repository.UserStateRepository;
 public class PoeStashAuditorApplication extends SpringBootServletInitializer{
 
 	public static void main(String[] args) {
+		Dotenv environment = Dotenv.configure().directory(".").load();
+		environment.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
 		SpringApplication.run(PoeStashAuditorApplication.class, args);
 	}
 

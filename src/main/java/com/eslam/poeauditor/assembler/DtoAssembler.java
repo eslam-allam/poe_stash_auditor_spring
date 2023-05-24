@@ -1,4 +1,4 @@
-package com.eslam.poeauditor;
+package com.eslam.poeauditor.assembler;
 
 import java.net.URISyntaxException;
 

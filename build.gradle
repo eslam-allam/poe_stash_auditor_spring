@@ -16,12 +16,33 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	// implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation ('org.springframework.boot:spring-boot-starter-web') {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        }
+
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2'
+
+	implementation ('org.springframework.boot:spring-boot-starter-security') {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        }
+	implementation ('org.springframework.boot:spring-boot-starter-data-jpa') {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        }
+	
 	implementation group: 'com.mysql', name: 'mysql-connector-j', version: '8.0.33'
 	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
 	implementation group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.2.1'
+	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
+	annotationProcessor 'org.projectlombok:lombok:1.18.26'
+	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+	implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+	implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
+	implementation group: 'io.github.cdimascio', name: 'java-dotenv', version: '5.2.2'
+
+
+
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
