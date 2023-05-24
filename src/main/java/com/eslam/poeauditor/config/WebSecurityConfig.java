@@ -22,7 +22,7 @@ import com.eslam.poeauditor.service.PoeUserDetailsService;
 @Configuration
 @EnableWebSecurity
 @EnableWebMvc
-public class WebSecurityConfig  {
+public class WebSecurityConfig{
 
     private static final String[] SECURED_URLs = {};
 
@@ -36,7 +36,6 @@ public class WebSecurityConfig  {
 
     @Autowired
     private PoeUserDetailsService userDetailsService;
-
 
 
     @Bean
@@ -54,14 +53,14 @@ public class WebSecurityConfig  {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf().disable()
-                .authorizeHttpRequests()
-                .requestMatchers(UN_SECURED_URLs).permitAll().and()
-                .authorizeHttpRequests().requestMatchers(SECURED_URLs)
-                .hasAuthority("ADMIN").anyRequest().authenticated()
-                .and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+        return http.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(authorizeRequests ->
+                authorizeRequests.requestMatchers(UN_SECURED_URLs).permitAll()
+                ).authorizeHttpRequests(authorizeRequests ->
+                authorizeRequests.requestMatchers(SECURED_URLs)
+                .hasAuthority("ADMIN").anyRequest().authenticated())
+                .sessionManagement(sessionManagement -> 
+                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
