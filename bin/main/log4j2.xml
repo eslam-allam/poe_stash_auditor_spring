@@ -3,14 +3,15 @@
     <Properties>  
       <property name="LOG_PATTERN">${sys:LOG_PATTERN}</property> 
       <property name="APP_LOG_ROOT">${sys:APP_LOG_ROOT}</property> 
-      <property name="SPRING_ENVIRONMENT">${sys:SPRING_ENVIRONMENT}</property> 
-      <property name="LOGGING_LEVEL">${sys:LOGGING_LEVEL}</property> 
+      <property name="SPRING_ENVIRONMENT">${sys:SPRING_PROFILE_ACTIVE}</property> 
+      <property name="LOGGING_LEVEL">${sys:APPLICATION_LOGGING_LEVEL}</property> 
+      <property name="LOGGING_APPENDER">${sys:LOGGING_APPENDER}</property> 
   </Properties>  
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT" follow="true">
             <PatternLayout pattern="${LOG_PATTERN}" />
         </Console>
-        <RollingFile name="appLog"
+        <RollingFile name="RollingFile"
                 fileName="${APP_LOG_ROOT}/${SPRING_ENVIRONMENT}/application.log"
                 filePattern="${APP_LOG_ROOT}/${SPRING_ENVIRONMENT}/application-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout pattern="${LOG_PATTERN}" />
@@ -21,13 +22,11 @@
         </RollingFile>
     </Appenders>
     <Loggers>
-        <Logger name="com.howtodoinjava.app" additivity="false">
-            <AppenderRef ref="appLog" />
-            <AppenderRef ref="Console" />
+        <Logger name="com.eslam.poeauditor" additivity="false">
+            <AppenderRef ref="${LOGGING_APPENDER}" />
         </Logger>
         <Root level="${LOGGING_LEVEL}">
-            <AppenderRef ref="Console" />
-            <AppenderRef ref="appLog" />
+            <AppenderRef ref="${LOGGING_APPENDER}" />
         </Root>
     </Loggers>
 </Configuration>

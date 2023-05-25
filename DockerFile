@@ -1,0 +1,37 @@
+# Use an OpenJDK base image
+FROM gradle:7.2.0-jdk17 AS build
+
+WORKDIR /poe_stash_auditor_spring
+
+# Copy the Gradle files
+COPY build.gradle .
+COPY settings.gradle .
+COPY gradlew .
+COPY gradle/ gradle/
+RUN chmod +x gradlew
+
+# Download and cache the dependencies
+RUN apt-get update && apt-get install -y findutils
+RUN ./gradlew dependencies
+
+# Copy the project source code
+COPY src/ src/
+
+COPY .env /poe_stash_auditor_spring/.env
+
+# Build the project
+RUN ./gradlew build --no-daemon
+
+# Stage 2: Create the final image
+FROM gradle:7.2.0-jdk17
+WORKDIR /poe_stash_auditor_spring
+
+# Copy the built JAR file from the previous stage
+COPY --from=build /poe_stash_auditor_spring/build/libs/poe_stash_auditor-0.0.1-SNAPSHOT.jar /poe_stash_auditor_spring/poe_stash_auditor-0.0.1-SNAPSHOT.jar
+COPY .env /poe_stash_auditor_spring/.env
+
+# Expose the port on which your application will run
+EXPOSE 8080
+
+# Run the Spring Boot application
+CMD ["java", "-jar", "/poe_stash_auditor_spring/poe_stash_auditor-0.0.1-SNAPSHOT.jar"]

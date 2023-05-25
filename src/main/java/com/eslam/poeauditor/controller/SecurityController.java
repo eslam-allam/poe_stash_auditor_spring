@@ -6,7 +6,6 @@ import com.eslam.poeauditor.assembler.DtoAssembler;
 import com.eslam.poeauditor.constant.Scope;
 import com.eslam.poeauditor.domain.AuthUrlDto;
 import com.eslam.poeauditor.exception.UserAlreadyExistsException;
-import com.eslam.poeauditor.exception.UserNotFoundException;
 import com.eslam.poeauditor.model.User;
 import com.eslam.poeauditor.model.UserState;
 import com.eslam.poeauditor.request.AuthorizeRequest;
@@ -20,11 +19,14 @@ import lombok.RequiredArgsConstructor;
 
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -79,14 +81,15 @@ public class SecurityController {
         return DtoAssembler.assemble(authorizeRequest, poeAuthUrl);
     }
 
-    @PostMapping("/authenticate")
+    @PostMapping(value = "/authenticate", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest){
+        logger.info("generating authentication token");
         authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));        
+                .authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
         return jwtService.generateToken(authRequest.getUserName());
     }
 
-    @PostMapping(value="/register")
+    @PostMapping(value="/register", produces = MediaType.APPLICATION_JSON_VALUE)
     public User postMethodName(@RequestBody RegistrationRequest registrationRequest) throws UserAlreadyExistsException {
         User user = User.builder().userName(registrationRequest.getUserName())
         .emailId(registrationRequest.getEmail()).password(registrationRequest.getPassword()).build();

@@ -64,8 +64,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
-                filterChain.doFilter(request, response);
             }
+            filterChain.doFilter(request, response);
         } catch (Exception e) {
             String jsonMessage = gson.toJson(ExceptionMessageDto.builder().errorMessage(e.getMessage())
             .requestDetails(Collections.singletonMap("url", request.getRequestURI()))

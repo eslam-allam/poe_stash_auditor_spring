@@ -17,7 +17,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class PoeStashAuditorApplication extends SpringBootServletInitializer{
 
 	public static void main(String[] args) {
-		Dotenv environment = Dotenv.configure().directory(".").load();
+		Dotenv environment = Dotenv.configure().directory(".").filename(".env").load();
 		environment.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
 		SpringApplication.run(PoeStashAuditorApplication.class, args);
 	}
