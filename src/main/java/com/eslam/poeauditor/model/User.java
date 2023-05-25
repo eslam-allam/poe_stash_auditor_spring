@@ -18,7 +18,7 @@ import org.hibernate.annotations.NaturalId;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "user")
+@Table(name = "poe_user")
 public class User {
     
     @Id
