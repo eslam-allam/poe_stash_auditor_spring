@@ -16,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import com.eslam.poeauditor.constant.UserRoleCode;
 import com.eslam.poeauditor.jwt.JWTAuthenticationFilter;
 import com.eslam.poeauditor.service.PoeUserDetailsService;
 
@@ -28,7 +29,8 @@ public class WebSecurityConfig{
 
     private static final String[] UN_SECURED_URLs = {
             "/security/authenticate",
-            "/security/register"
+            "/security/register",
+            "/poeaccess"
     };
 
     @Autowired
@@ -58,7 +60,7 @@ public class WebSecurityConfig{
                 authorizeRequests.requestMatchers(UN_SECURED_URLs).permitAll()
                 ).authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests.requestMatchers(SECURED_URLs)
-                .hasAuthority("ADMIN").anyRequest().authenticated())
+                .hasAuthority(UserRoleCode.ADMIN.toString()).anyRequest().authenticated())
                 .sessionManagement(sessionManagement -> 
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

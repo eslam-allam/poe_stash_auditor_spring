@@ -40,7 +40,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private JWTService jwtService;
 
     @Autowired
-    private PoeUserDetailsService libraryUserDetailsService;
+    private PoeUserDetailsService poeUserDetailsService;
 
     private final Logger log = LogManager.getLogger(getClass());
     private final Gson gson = new Gson();
@@ -58,7 +58,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 userName = jwtService.extractUsernameFromToken(token);
             }
             if (userName != null & SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = libraryUserDetailsService.loadUserByUsername(userName);
+                UserDetails userDetails = poeUserDetailsService.loadUserByUsername(userName);
                 if(jwtService.validateToken(token, userDetails)) {
                     var authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

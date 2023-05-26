@@ -1,11 +1,11 @@
-package com.eslam.poeauditor.security;
+package com.eslam.poeauditor.model;
 
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.eslam.poeauditor.model.User;
+import com.eslam.poeauditor.constant.UserRoleCode;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,14 +21,21 @@ public class PoeUserDetails implements UserDetails {
     private String userName;
     private String password;
     private List<GrantedAuthority> authorities;
+    private Boolean enabled;
+    private Boolean expired;
+    private Boolean locked;
+    
 
     public PoeUserDetails(User user) {
         userName = user.getEmailId();
         password = user.getPassword();
-        authorities = Arrays.stream(user.getRoles()
-                .split(","))
+        authorities = user.getUserRoles().stream()
+                .map(UserRole::toString)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
+        enabled = user.getEnabled();
+        expired = user.getExpired();
+        locked = user.getLocked();
     }
 
     @Override
@@ -48,12 +55,12 @@ public class PoeUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return !this.expired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !this.locked;
     }
 
     @Override
@@ -63,6 +70,6 @@ public class PoeUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
     }
 }

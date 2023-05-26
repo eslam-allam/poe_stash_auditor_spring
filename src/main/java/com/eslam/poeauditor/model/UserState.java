@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.Objects;
 
@@ -27,8 +28,8 @@ public class UserState {
     @Column(name = "code_challenge")
     private String codeChallenge;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @OneToOne
+    @JoinColumn
     private User user;
 
 

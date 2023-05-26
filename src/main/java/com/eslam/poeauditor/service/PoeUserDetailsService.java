@@ -7,8 +7,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import com.eslam.poeauditor.model.PoeUserDetails;
 import com.eslam.poeauditor.repository.UserRepository;
-import com.eslam.poeauditor.security.PoeUserDetails;
 
 /**
  * @author Samson Effes

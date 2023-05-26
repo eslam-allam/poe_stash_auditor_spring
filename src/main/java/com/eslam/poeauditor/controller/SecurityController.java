@@ -4,10 +4,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.eslam.poeauditor.assembler.DtoAssembler;
 import com.eslam.poeauditor.constant.Scope;
+import com.eslam.poeauditor.constant.UserRoleCode;
 import com.eslam.poeauditor.domain.AuthUrlDto;
 import com.eslam.poeauditor.exception.UserAlreadyExistsException;
+import com.eslam.poeauditor.exception.UserRoleNotFoundException;
 import com.eslam.poeauditor.model.User;
 import com.eslam.poeauditor.model.UserState;
+import com.eslam.poeauditor.repository.UserRepository;
 import com.eslam.poeauditor.request.AuthorizeRequest;
 import com.eslam.poeauditor.request.JWTAuthenticationRequest;
 import com.eslam.poeauditor.request.RegistrationRequest;
@@ -15,12 +18,15 @@ import com.eslam.poeauditor.service.JWTService;
 import com.eslam.poeauditor.service.SecurityService;
 import com.eslam.poeauditor.service.UserService;
 
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.Map;
+
+import javax.naming.AuthenticationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,13 +74,23 @@ public class SecurityController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private UserRepository userRepository;
+
 
     private final Logger logger = LogManager.getLogger(getClass());
 
     @GetMapping(value="/auth/url")
-    public AuthUrlDto getAuthUrl(@RequestParam("scope") Scope scope) throws NoSuchAlgorithmException, URISyntaxException {
+    public AuthUrlDto getAuthUrl(@RequestParam("scope") Scope scope) throws NoSuchAlgorithmException, URISyntaxException, AuthenticationException {
         
-        UserState userState = securityService.generateUserState();
+        User user = securityService.getLoggedInUser();
+
+        UserState userState = securityService.createOrRefreshUserState(user);
+
+        user.setUserState(userState);
+        userRepository.save(user);
+
         AuthorizeRequest authorizeRequest = new AuthorizeRequest(userState)
         .clientId(clientId).scope(scope.getScopeName()).redirectUrl(redirectUri);
 
@@ -90,10 +106,15 @@ public class SecurityController {
     }
 
     @PostMapping(value="/register", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User postMethodName(@RequestBody RegistrationRequest registrationRequest) throws UserAlreadyExistsException {
+    public User postMethodName(@RequestBody RegistrationRequest registrationRequest) throws UserAlreadyExistsException, UserRoleNotFoundException {
         User user = User.builder().userName(registrationRequest.getUserName())
         .emailId(registrationRequest.getEmail()).password(registrationRequest.getPassword()).build();
-        return userService.createUser(user);
+        return userService.createUser(user, UserRoleCode.BASE_USER);
+    }
+    
+    @GetMapping(value="test")
+    public Map<String, String> getMethodName(@RequestParam("code") String code, @RequestParam("state") String state) {
+        return Collections.singletonMap(code, state);
     }
     
     
