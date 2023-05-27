@@ -38,10 +38,10 @@ public class User {
     private String userName;
 
     @NaturalId
-    @Column(name = "email_id")
+    @Column(name = "email_id", nullable = false)
     private String emailId;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -51,13 +51,13 @@ public class User {
     @OneToOne
     private UserState userState;
 
-    @Column(name = "is_enabled")
+    @Column(name = "is_enabled", nullable = false)
     private Boolean enabled = true;
 
-    @Column(name = "is_expired")
+    @Column(name = "is_expired", nullable = false)
     private Boolean expired = false;
 
-    @Column(name = "is_locked")
+    @Column(name = "is_locked", nullable = false)
     private Boolean locked = false;
 
     @Builder

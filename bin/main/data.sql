@@ -1,2 +1,2 @@
-INSERT INTO user_role(role_code, description) VALUES ('ADMIN', 'Admin User with global access');
-INSERT INTO user_role(role_code, description) VALUES ('BASE_USER', 'Base user with minimum permissions');
+INSERT IGNORE INTO user_role(id, role_code, description) VALUES (1 ,'ADMIN', 'Admin User with global access');
+INSERT IGNORE INTO user_role(id, role_code, description) VALUES (2 ,'BASE_USER', 'Base user with minimum permissions');

@@ -38,5 +38,15 @@
     "name": "spring.jwt.jwtExpirationInMs",
     "type": "java.lang.Long",
     "description": "Duration til expiry of JWT token."
+  },
+  {
+    "name": "datasource.admin.username",
+    "type": "java.lang.String",
+    "description": "Username of default poe admin"
+  },
+  {
+    "name": "datasource.admin.password",
+    "type": "java.lang.String",
+    "description": "password of default poe admin"
   }
 ]}
