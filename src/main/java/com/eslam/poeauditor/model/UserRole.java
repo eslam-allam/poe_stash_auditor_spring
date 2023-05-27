@@ -1,6 +1,5 @@
 package com.eslam.poeauditor.model;
 
-import java.util.List;
 
 import com.eslam.poeauditor.constant.UserRoleCode;
 

@@ -12,10 +12,10 @@ public final class DtoAssembler {
         
     }
 
-    public static AuthUrlDto assemble(AuthorizeRequest authorizeRequest, String baseUrl) throws URISyntaxException {
-        String uri = new URIBuilder(baseUrl).addParameter("client_id", authorizeRequest.getClientId())
+    public static AuthUrlDto assemble(AuthorizeRequest authorizeRequest) throws URISyntaxException {
+        String uri = new URIBuilder(authorizeRequest.getBaseUrl()).addParameter("client_id", authorizeRequest.getClientId())
         .addParameter("response_type", authorizeRequest.getResponseType())
-        .addParameter("scope", authorizeRequest.getScope()).addParameter("state", authorizeRequest.getState())
+        .addParameter("scope", authorizeRequest.getScope().getScopeName()).addParameter("state", authorizeRequest.getState())
         .addParameter("redirect_uri", authorizeRequest.getRedirectUrl())
         .addParameter("code_challenge", authorizeRequest.getCodeChallenge())
         .addParameter("code_challenge_method", authorizeRequest.getCodeChallengeMethod()).build().toString();

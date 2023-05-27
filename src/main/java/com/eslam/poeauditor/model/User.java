@@ -8,7 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,9 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.NaturalId;
-
-import com.eslam.poeauditor.constant.UserRoleCode;
-
 
 @Entity
 @Getter
@@ -48,8 +45,8 @@ public class User {
     @JoinTable(name = "user_roles")
     private List<UserRole> userRoles;
 
-    @OneToOne
-    private UserState userState;
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<UserState> userStates;
 
     @Column(name = "is_enabled", nullable = false)
     private Boolean enabled = true;
@@ -73,5 +70,12 @@ public class User {
             this.userRoles = new ArrayList<>();
         }
         this.userRoles.add(userRole);
+    }
+    
+    public void addUserState (UserState userState) {
+        if (this.userStates == null) {
+            this.userStates = new ArrayList<>();
+        }
+        this.userStates.add(userState);
     }
 }

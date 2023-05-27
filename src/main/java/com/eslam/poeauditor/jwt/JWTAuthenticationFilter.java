@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import com.eslam.poeauditor.domain.ExceptionMessageDto;
-import com.eslam.poeauditor.exception.InvalidTokenException;
 import com.eslam.poeauditor.service.JWTService;
 
 import org.apache.hc.core5.http.HttpStatus;
@@ -57,9 +56,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 token = authHeader.substring(7);
                 userName = jwtService.extractUsernameFromToken(token);
             }
-            if (userName != null & SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = poeUserDetailsService.loadUserByUsername(userName);
-                if(jwtService.validateToken(token, userDetails)) {
+                if(Boolean.TRUE.equals(jwtService.validateToken(token, userDetails))) {
                     var authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);

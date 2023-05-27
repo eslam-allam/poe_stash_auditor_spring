@@ -16,18 +16,17 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.eslam.poeauditor.domain.ExceptionMessageDto;
-import com.eslam.poeauditor.exception.InvalidTokenException;
 import com.eslam.poeauditor.exception.UserAlreadyExistsException;
 
 @RestControllerAdvice
 public class ExceptionHandlerAdvisor extends ResponseEntityExceptionHandler{
     
-    private final Logger logger = LogManager.getLogger(getClass());
+    private final Logger log = LogManager.getLogger(getClass());
 
     @ExceptionHandler(value = {Exception.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionMessageDto generalExceptionHandler(Exception ex, WebRequest request) {
-        logger.error("A {} has occurred: {}", ex.getClass().getCanonicalName(), ex.getMessage());
+        log.error("A {} has occurred: {}", ex.getClass().getCanonicalName(), ex.getMessage());
         return ExceptionMessageDto.builder().errorMessage(ex.getMessage())
         .requestDetails(constructRequestDetails(request.getDescription(true)))
         .build();
@@ -36,7 +35,7 @@ public class ExceptionHandlerAdvisor extends ResponseEntityExceptionHandler{
     @ExceptionHandler(value = {BadCredentialsException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ExceptionMessageDto badCredentialsExceptionHandler(BadCredentialsException ex, WebRequest request) {
-        logger.error("A BadCredentialsException has occurred: {}", ex.getMessage());
+        log.error("A BadCredentialsException has occurred: {}", ex.getMessage());
         return ExceptionMessageDto.builder().errorMessage(ex.getMessage())
         .requestDetails(constructRequestDetails(request.getDescription(true)))
         .build();
@@ -45,7 +44,7 @@ public class ExceptionHandlerAdvisor extends ResponseEntityExceptionHandler{
     @ExceptionHandler(value = {UserAlreadyExistsException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
     public ExceptionMessageDto userAlreadyExistsExceptionHandler(UserAlreadyExistsException ex, WebRequest request) {
-        logger.error("A UserAlreadyExistsException has occurred: {}", ex.getMessage());
+        log.error("A UserAlreadyExistsException has occurred: {}", ex.getMessage());
         return ExceptionMessageDto.builder().errorMessage(ex.getMessage())
         .requestDetails(constructRequestDetails(request.getDescription(true)))
         .build();

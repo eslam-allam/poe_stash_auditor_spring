@@ -66,4 +66,8 @@ public class UserService {
         }
         return user.get();
     }
+
+    public User saveUser(User user) {
+        return userRepository.save(user); 
+    }
 }

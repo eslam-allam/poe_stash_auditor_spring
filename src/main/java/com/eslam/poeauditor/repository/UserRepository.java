@@ -9,5 +9,7 @@ import com.eslam.poeauditor.model.User;
 public interface UserRepository extends JpaRepository<User, Long>{
     Optional<User> findByUserName(String userName);
     Optional<User> findByEmailId(String emailId);
+
+    @SuppressWarnings("unchecked")
     User save(User user);
 }
