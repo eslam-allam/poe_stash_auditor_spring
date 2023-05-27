@@ -18,7 +18,7 @@ public class AuthorizationTokenDto {
     
     @Setter(AccessLevel.NONE)
     @JsonProperty("expires_in")
-    private Date expiresIn;
+    private Date expiresAt;
     
     @JsonProperty("token_type")
     private String tokenType;
@@ -36,8 +36,8 @@ public class AuthorizationTokenDto {
     @JsonProperty("refresh_token")
     private String refreshToken;
 
-    public void setExpiresIn(Long expiresIn) {
-        this.expiresIn = Date.from(Instant.now().plusSeconds(expiresIn));
+    public void setExpiresAt(Long expiresIn) {
+        this.expiresAt = Date.from(Instant.now().plusSeconds(expiresIn));
     }
 
     public void setScope(String scope) {

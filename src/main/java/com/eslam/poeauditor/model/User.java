@@ -1,5 +1,6 @@
 package com.eslam.poeauditor.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -45,8 +46,11 @@ public class User {
     @JoinTable(name = "user_roles")
     private List<UserRole> userRoles;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<UserState> userStates;
+    
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<UserAuthorizationCode> userAuthorizationCodes;
 
     @Column(name = "is_enabled", nullable = false)
     private Boolean enabled = true;
@@ -70,12 +74,5 @@ public class User {
             this.userRoles = new ArrayList<>();
         }
         this.userRoles.add(userRole);
-    }
-    
-    public void addUserState (UserState userState) {
-        if (this.userStates == null) {
-            this.userStates = new ArrayList<>();
-        }
-        this.userStates.add(userState);
     }
 }

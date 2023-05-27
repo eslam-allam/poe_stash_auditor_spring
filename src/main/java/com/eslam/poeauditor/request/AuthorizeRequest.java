@@ -41,7 +41,7 @@ public class AuthorizeRequest {
         this.scope = scope;
         this.redirectUrl = redirectUrl;
         this.baseUrl = targetUrl;
-        this.state = userState.state();
-        this.codeChallenge = userState.codeChallenge();
+        this.state = userState.getState();
+        this.codeChallenge = userState.getCodeChallenge();
     }
 }

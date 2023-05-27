@@ -69,31 +69,29 @@ public class SecurityService {
         UserState refreshedState;
 
         if (!userState.isPresent()) {
-            refreshedState = generateUserState(scope);
-            user.addUserState(refreshedState);
+            refreshedState = generateUserState(scope, user);
         } else {
             refreshedState = refreshUserState(userState.get());
         }
-        userService.saveUser(user);
-
         return refreshedState;
     }
 
 
-    private UserState generateUserState(Scope scope) throws NoSuchAlgorithmException{
+    private UserState generateUserState(Scope scope, User user) throws NoSuchAlgorithmException{
         String codeVerifier = PkceUtil.generateCodeVerifier();
         String codeChallenge = PkceUtil.generateCodeChallenge(codeVerifier);
         String state = PkceUtil.generateRandomAlphanumeric(32);
 
         UserState userState = UserState.builder().state(state).codeVerifier(codeVerifier)
-        .codeChallenge(codeChallenge).scope(scope).build();
+        .codeChallenge(codeChallenge).scope(scope).user(user).build();
         return userStateRepository.save(userState);
     }
     
     private UserState refreshUserState(UserState userState) throws NoSuchAlgorithmException{
         String codeVerifier = PkceUtil.generateCodeVerifier();
         String codeChallenge = PkceUtil.generateCodeChallenge(codeVerifier);
-        userState.codeChallenge(codeChallenge).codeVerifier(codeVerifier);
+        userState.setCodeChallenge(codeChallenge);
+        userState.setCodeVerifier(codeVerifier);
         return userStateRepository.save(userState);
     }
 
@@ -134,14 +132,14 @@ public class SecurityService {
     public TokenRequest generateTokenRequest(UserState userState, Scope scope, String code) {
         return TokenRequest.builder().clientId(clientId).clientSecret(clientSecret)
         .grantType(GrantType.AUTHORIZATION_CODE).code(code).redirectUrl(redirectUri)
-        .scope(scope).codeVerifier(userState.codeVerifier()).build();
+        .scope(scope).codeVerifier(userState.getCodeVerifier()).build();
     }
 
     private Optional<UserState> getWithScope(List<UserState> userStates, Scope scope) {
         if (userStates == null) {
             return Optional.empty();
         }
-        return userStates.stream().filter(userState -> userState.scope().equals(scope)).findFirst();
+        return userStates.stream().filter(userState -> userState.getScope().equals(scope)).findFirst();
     }
 
     public AuthorizationTokenDto getAuthorizationToken(TokenRequest tokenRequest) throws RestClientException, IllegalArgumentException, IllegalAccessException {
