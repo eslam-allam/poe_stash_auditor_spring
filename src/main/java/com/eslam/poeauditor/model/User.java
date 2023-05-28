@@ -50,7 +50,7 @@ public class User {
     private List<UserState> userStates;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<UserAuthorizationCode> userAuthorizationCodes;
+    private List<AuthorizationGrant> userAuthorizationGrants;
 
     @Column(name = "is_enabled", nullable = false)
     private Boolean enabled = true;

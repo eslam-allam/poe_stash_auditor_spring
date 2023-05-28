@@ -1,5 +1,5 @@
 package com.eslam.poeauditor.constant;
 
 public enum UserRoleCode {
-    ADMIN, BASE_USER
+    SUPER_MAIN_ADMIN ,ADMIN, BASE_USER
 }

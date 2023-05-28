@@ -7,6 +7,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.eslam.poeauditor.constant.GrantType;
 import com.eslam.poeauditor.constant.Scope;
+import com.eslam.poeauditor.constant.StringValued;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Builder;
@@ -33,6 +34,7 @@ public class TokenRequest {
     
     @JsonProperty("scope")
     private Scope scope;
+    
 
     @JsonProperty("code_verifier")
     private final String codeVerifier;
@@ -45,13 +47,14 @@ public class TokenRequest {
                 fieldName = field.getAnnotation(JsonProperty.class).value();
             }
             Object value = field.get(this);
-            if (value instanceof Scope) {
-                value = ((Scope) value).getScopeName();
+
+            if (value instanceof StringValued) {
+                value = ((StringValued) value).getStringValue();
             }
-            if (value instanceof GrantType) {
-                value = ((GrantType) value).getType();
+
+            if (value != null) {
+                map.add(fieldName, value.toString());
             }
-            map.add(fieldName, value.toString());
         }
         return map;
     }

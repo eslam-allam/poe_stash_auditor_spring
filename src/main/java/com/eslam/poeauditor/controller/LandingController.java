@@ -7,10 +7,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestClientException;
+
+import com.eslam.poeauditor.assembler.ModelAssembler;
 import com.eslam.poeauditor.domain.AuthorizationTokenDto;
 import com.eslam.poeauditor.exception.UserStateNotFoundException;
 import com.eslam.poeauditor.model.User;
-import com.eslam.poeauditor.model.UserAuthorizationCode;
+import com.eslam.poeauditor.model.AuthorizationGrant;
 import com.eslam.poeauditor.model.UserState;
 import com.eslam.poeauditor.request.TokenRequest;
 import com.eslam.poeauditor.service.SecurityService;
@@ -45,11 +47,7 @@ public class LandingController {
         user.setUserName(authorizationTokenDto.getUsername());
         user = userService.saveUser(user);
         
-        UserAuthorizationCode userAuthorizationCode = UserAuthorizationCode.builder()
-        .accessToken(authorizationTokenDto.getAccessToken()).expiresAt(authorizationTokenDto.getExpiresAt())
-        .refreshToken(authorizationTokenDto.getRefreshToken()).scope(authorizationTokenDto.getScope())
-        .sub(authorizationTokenDto.getSub()).tokenType(authorizationTokenDto.getTokenType()).user(user)
-        .build();
+        AuthorizationGrant userAuthorizationCode = ModelAssembler.assemble(authorizationTokenDto, user);
 
         userAuthorizationCodeService.saveAuthorizationCode(userAuthorizationCode);
         

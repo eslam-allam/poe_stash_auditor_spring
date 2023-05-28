@@ -33,6 +33,8 @@ import com.eslam.poeauditor.request.AuthorizeRequest;
 import com.eslam.poeauditor.request.TokenRequest;
 import com.eslam.poeauditor.security.PkceUtil;
 
+import jakarta.annotation.PostConstruct;
+
 @Service
 public class SecurityService {
 
@@ -58,6 +60,11 @@ public class SecurityService {
 
     @Autowired
     private UserService userService;
+
+    @PostConstruct
+    public void init() {
+        
+    }
 
     public UserState createOrRefreshUserState(User user, Scope scope) throws NoSuchAlgorithmException {
         if (user == null) {

@@ -18,14 +18,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "user_authorization_code")
-public class UserAuthorizationCode {
+@Table(name = "authorization_grant")
+public class AuthorizationGrant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,7 +55,7 @@ public class UserAuthorizationCode {
 
 
     @Builder
-    public UserAuthorizationCode(String accessToken, Date expiresAt, String tokenType, Scope scope, 
+    public AuthorizationGrant(String accessToken, Date expiresAt, String tokenType, Scope scope, 
     String sub, String refreshToken, User user) {
         this.accessToken = accessToken;
         this.expiresAt = expiresAt;
