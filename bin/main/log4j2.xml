@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN" monitorInterval="30">
     <Properties>  
-      <property name="LOG_PATTERN">${bundle:logging.pattern}</property> 
-      <property name="APP_LOG_ROOT">${bundle:logging.root}</property> 
-      <property name="SPRING_ENVIRONMENT">${bundle:spring.profiles.active}</property> 
-      <property name="LOGGING_LEVEL">${bundle:logging.level.*}</property> 
-      <property name="LOGGING_APPENDER">${bundle:logging.appender}</property> 
+      <property name="LOG_PATTERN">${bundle:application:logging.pattern}</property> 
+      <property name="APP_LOG_ROOT">${bundle:application:logging.root}</property> 
+      <property name="SPRING_ENVIRONMENT">${bundle:application:spring.profiles.active}</property> 
+      <property name="LOGGING_LEVEL">${bundle:application:logging.level.*}</property> 
+      <property name="LOGGING_APPENDER">${bundle:application:logging.appender}</property> 
   </Properties>  
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT" follow="true">
