@@ -4,7 +4,7 @@
       <property name="LOG_PATTERN">${bundle:logging.pattern}</property> 
       <property name="APP_LOG_ROOT">${bundle:logging.root}</property> 
       <property name="SPRING_ENVIRONMENT">${bundle:spring.profiles.active}</property> 
-      <property name="LOGGING_LEVEL">${bundle:logging.level}</property> 
+      <property name="LOGGING_LEVEL">${bundle:logging.level.*}</property> 
       <property name="LOGGING_APPENDER">${bundle:logging.appender}</property> 
   </Properties>  
     <Appenders>
