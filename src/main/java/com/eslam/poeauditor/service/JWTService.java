@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.eslam.poeauditor.domain.JWTTokenDto;
+
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,21 +30,24 @@ public class JWTService {
     @Value("${spring.jwt.secret}")
     private  String jwtSecret;
 
-    @Value("${spring.jwt.jwtExpirationInMs}")
+    @Value("${spring.jwt.jwt.expiration.ms}")
     private int jwtExpirationTimeMilliseconds;
 
-    public String generateToken(String userName){
+    public JWTTokenDto generateToken(String userName){
         Map<String, Object> claims = new HashMap<>();
         return tokenCreator(claims, userName);
     }
 
-    public String tokenCreator(Map<String, Object> claims, String userName){
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(userName)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+jwtExpirationTimeMilliseconds))
-                .signWith(getSignedKey(), SignatureAlgorithm.HS256).compact();
+    public JWTTokenDto tokenCreator(Map<String, Object> claims, String userName){
+        Date issuedAt = new Date(System.currentTimeMillis());
+        Date expiresAt = new Date(System.currentTimeMillis()+jwtExpirationTimeMilliseconds);
+        String token = Jwts.builder()
+        .setClaims(claims)
+        .setSubject(userName)
+        .setIssuedAt(issuedAt)
+        .setExpiration(expiresAt)
+        .signWith(getSignedKey(), SignatureAlgorithm.HS256).compact();
+        return JWTTokenDto.builder().issuedAt(issuedAt).expiresAt(expiresAt).token(token).build();
     }
 
     public String extractUsernameFromToken(String theToken){

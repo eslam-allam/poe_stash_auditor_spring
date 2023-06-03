@@ -6,8 +6,11 @@ import com.eslam.poeauditor.assembler.DtoAssembler;
 import com.eslam.poeauditor.constant.Scope;
 import com.eslam.poeauditor.constant.UserRoleCode;
 import com.eslam.poeauditor.domain.AuthUrlDto;
+import com.eslam.poeauditor.domain.JWTTokenDto;
+import com.eslam.poeauditor.domain.UserDto;
 import com.eslam.poeauditor.exception.UserAlreadyExistsException;
 import com.eslam.poeauditor.exception.UserRoleNotFoundException;
+import com.eslam.poeauditor.mapper.UserMapper;
 import com.eslam.poeauditor.model.User;
 import com.eslam.poeauditor.model.UserState;
 import com.eslam.poeauditor.request.AuthorizeRequest;
@@ -17,6 +20,7 @@ import com.eslam.poeauditor.service.JWTService;
 import com.eslam.poeauditor.service.SecurityService;
 import com.eslam.poeauditor.service.UserService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
 import java.net.URISyntaxException;
@@ -53,9 +57,13 @@ public class SecurityController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserMapper userMapper;
+
 
     private final Logger logger = LogManager.getLogger(getClass());
 
+    @SecurityRequirement(name = "base-user")
     @GetMapping(value="/auth/url")
     public AuthUrlDto getAuthUrl(@RequestParam("scope") Scope scope) throws NoSuchAlgorithmException, URISyntaxException, AuthenticationException {
         
@@ -69,7 +77,7 @@ public class SecurityController {
     }
 
     @PostMapping(value = "/authenticate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest){
+    public JWTTokenDto getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest){
         logger.info("generating authentication token");
         authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
@@ -77,10 +85,10 @@ public class SecurityController {
     }
 
     @PostMapping(value="/register", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User postMethodName(@RequestBody RegistrationRequest registrationRequest) throws UserAlreadyExistsException, UserRoleNotFoundException {
-        User user = User.builder().userName(registrationRequest.getUserName())
-        .emailId(registrationRequest.getEmail()).password(registrationRequest.getPassword()).build();
-        return userService.createUser(user, UserRoleCode.BASE_USER);
+    public UserDto postMethodName(@RequestBody RegistrationRequest registrationRequest) throws UserAlreadyExistsException, UserRoleNotFoundException {
+        User user = User.builder().emailId(registrationRequest.getEmail())
+        .password(registrationRequest.getPassword()).build();
+        return userMapper.assemble(userService.createUser(user, UserRoleCode.BASE_USER));
     }
 
 }

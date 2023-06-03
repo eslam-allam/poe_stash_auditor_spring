@@ -35,7 +35,7 @@
     "description": "Encryption secret used for encoding JWT tokens."
   },
   {
-    "name": "spring.jwt.jwtExpirationInMs",
+    "name": "spring.jwt.jwt.expiration.ms",
     "type": "java.lang.Long",
     "description": "Duration til expiry of JWT token."
   },
@@ -48,5 +48,20 @@
     "name": "datasource.admin.password",
     "type": "java.lang.String",
     "description": "password of default poe admin"
+  },
+  {
+    "name": "price.fetch.job.delay.ms",
+    "type": "java.lang.Long",
+    "description": "Number of Ms between every price fetch job"
+  },
+  {
+    "name": "poe.api.url",
+    "type": "java.lang.String",
+    "description": "Base Url for all POE services"
+  },
+  {
+    "name": "poe.ninja.api.base.url",
+    "type": "java.lang.String",
+    "description": "Base Url for price fetch API."
   }
 ]}
