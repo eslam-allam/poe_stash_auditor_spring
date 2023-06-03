@@ -20,7 +20,7 @@ COPY src/ src/
 COPY .env /poe_stash_auditor_spring/.env
 
 # Build the project
-RUN ./gradlew build --no-daemon
+RUN ./gradlew build --no-daemon --info
 
 # Stage 2: Create the final image
 FROM gradle:7.2.0-jdk17
