@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN" monitorInterval="30">
     <Properties>  
-      <property name="LOG_PATTERN">${sys:logging.pattern}</property> 
-      <property name="APP_LOG_ROOT">${sys:logging.root}</property> 
-      <property name="SPRING_ENVIRONMENT">${sys:spring.profiles.active}</property> 
-      <property name="LOGGING_LEVEL">${sys:logging.level.*}</property> 
-      <property name="LOGGING_APPENDER">${sys:logging.appender}</property> 
-  </Properties>  
+        <property name="LOG_PATTERN">${sys:LOG_PATTERN}</property> 
+        <property name="APP_LOG_ROOT">${sys:APP_LOG_ROOT}</property> 
+        <property name="SPRING_ENVIRONMENT">${sys:SPRING_PROFILE_ACTIVE}</property> 
+        <property name="LOGGING_LEVEL">${sys:APPLICATION_LOGGING_LEVEL}</property> 
+        <property name="LOGGING_APPENDER">${sys:LOGGING_APPENDER}</property>
+    </Properties>  
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT" follow="true">
             <PatternLayout pattern="${LOG_PATTERN}" />
