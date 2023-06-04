@@ -22,7 +22,10 @@ import com.eslam.poeauditor.constant.PoeApiPath;
 import com.eslam.poeauditor.constant.Scope;
 import com.eslam.poeauditor.constant.StashType;
 import com.eslam.poeauditor.constant.UserRoleCode;
+import com.eslam.poeauditor.domain.ItemOverview;
+import com.eslam.poeauditor.domain.UserStashItem;
 import com.eslam.poeauditor.domain.UserStashTab;
+import com.eslam.poeauditor.domain.bundle.UserStashItemBundle;
 import com.eslam.poeauditor.domain.bundle.UserStashTabBundle;
 import com.eslam.poeauditor.exception.UserAlreadyExistsException;
 import com.eslam.poeauditor.exception.UserNotFoundException;
@@ -127,5 +130,56 @@ public class UserService {
             return new ArrayList<>();
         }
         return userStashTabBundle.getUserStashTabs(StashType.implementedStashes(), true);
+    }
+
+    public List<UserStashItem> getUserStashTabItems(User user, String league, String stashId) {
+        Optional<AuthorizationGrant> authorizationGrant = user.getUserAuthorizationGrants().stream()
+        .filter(grant -> grant.getScope().equals(Scope.STASHES)).max((grant1, grant2) -> 
+        grant1.getExpiresAt().compareTo(grant2.getExpiresAt()));
+
+        if (authorizationGrant.isEmpty()) {
+            throw new IllegalAccessError("User does not have a stash token. Please reauthenticate with poe account");
+        }
+        if (authorizationGrant.get().getExpiresAt().before(Date.from(Instant.now()))) {
+            throw new IllegalAccessError("User POE token expired. Please reauthenticate with poe account");
+        }
+        if (priceFetch.getLeagues().stream().noneMatch(l -> l.equals(league))) {
+            throw new IllegalArgumentException("Provided league is invalid");
+        }
+
+        String url = UriComponentsBuilder.fromHttpUrl(poeApiUrl).pathSegment(PoeApiPath.STASH.getStringValue())
+        .pathSegment(league).pathSegment(stashId).toUriString();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(authorizationGrant.get().getAccessToken());
+
+        HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
+
+        UserStashItemBundle userStashItemBundle = restTemplate.exchange(url, HttpMethod.GET, httpEntity, UserStashItemBundle.class).getBody();
+
+        if (userStashItemBundle == null || userStashItemBundle.getItemStash().getUserStashItems() == null) {
+            return new ArrayList<>();
+        }
+        List<ItemOverview> itemOverviews = priceFetch.getItemOverview(league);
+        List<UserStashItem> userStashItems = new ArrayList<>();
+        userStashItemBundle.getItemStash().getUserStashItems().parallelStream().forEachOrdered(item -> {
+            Optional<ItemOverview> itemOverview = itemOverviews.parallelStream()
+            .filter(overview -> overview.getName().equalsIgnoreCase(item.getTypeLine())).findAny();
+            if (itemOverview.isPresent()) {
+                UserStashItem userStashItem = item;
+                userStashItem.setChaosValue(itemOverview.get().getChaosValue());
+                
+                Optional<UserStashItem> existingItem = userStashItems.parallelStream().filter(ei -> ei.getTypeLine().
+                equals(userStashItem.getTypeLine())).findAny();
+
+                if (existingItem.isPresent()) {
+                    existingItem.get().setStackSize(existingItem.get().getStackSize() + userStashItem.getStackSize());
+                }
+                else {
+                    userStashItems.add(userStashItem);
+                }
+            }
+        });
+
+        return userStashItems;
     }
 }

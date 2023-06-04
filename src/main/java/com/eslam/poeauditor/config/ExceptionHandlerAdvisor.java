@@ -27,6 +27,7 @@ public class ExceptionHandlerAdvisor extends ResponseEntityExceptionHandler{
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionMessageDto generalExceptionHandler(Exception ex, WebRequest request) {
         log.error("A {} has occurred: {}", ex.getClass().getCanonicalName(), ex.getMessage());
+        log.catching(ex);
         return ExceptionMessageDto.builder().errorMessage(ex.getMessage())
         .requestDetails(constructRequestDetails(request.getDescription(true)))
         .build();

@@ -20,9 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.eslam.poeauditor.constant.ItemCategory;
 import com.eslam.poeauditor.constant.OverViewType;
-import com.eslam.poeauditor.domain.CurrencyOverview;
 import com.eslam.poeauditor.domain.ItemOverview;
-import com.eslam.poeauditor.domain.bundle.CurrencyOverviewBundle;
 import com.eslam.poeauditor.domain.bundle.ItemOverviewBundle;
 
 import jakarta.annotation.PostConstruct;
@@ -39,7 +37,6 @@ public class PriceFetch {
     private final RestTemplate restTemplate = new RestTemplate();
 
     private List<String> leagues;
-    private Map<String ,List<CurrencyOverview>> currencyOverviews = new HashMap<>();
     private Map<String ,List<ItemOverview>> itemOverviews = new HashMap<>();
 
 
@@ -67,33 +64,24 @@ public class PriceFetch {
                     .pathSegment(category.getOverViewType().getStringValue()).queryParam("league", league)
                     .queryParam("type", category.getStringValue()).encode().toUriString();
 
-                if (category.getOverViewType().equals(OverViewType.CURRENCY)){
-                    logger.info("fetching currency information from {}", finalUrl);
-                    CurrencyOverviewBundle currencyOverviewBundle = restTemplate.getForObject(finalUrl,
-                    CurrencyOverviewBundle.class);
-
-                    if (currencyOverviewBundle != null && currencyOverviewBundle.hasOverviews()) {
-                        this.currencyOverviews.put(league, currencyOverviewBundle.assembleOverviews());
-                    }
-                }
-                else if (category.getOverViewType().equals(OverViewType.ITEM)){
                     logger.info("fetching item information from {}", finalUrl);
                     ItemOverviewBundle itemOverviewBundle = restTemplate.getForObject(finalUrl, 
                     ItemOverviewBundle.class);
 
                     if (itemOverviewBundle != null && itemOverviewBundle.hasOverviews()) {
-                        this.itemOverviews.put(league, itemOverviewBundle.getItemOverviews());
+                        List<ItemOverview> leagueItemOverviews = this.itemOverviews.get(league);
+                        if (leagueItemOverviews == null) {
+                            leagueItemOverviews = new ArrayList<>();
+                        }
+                        leagueItemOverviews.addAll(itemOverviewBundle.getItemOverviews());
+                        this.itemOverviews.put(league, leagueItemOverviews);
                     }
-                }            
+                        
         });
     }
 
     public List<String> getLeagues() {
         return leagues;
-    }
-
-    public List<CurrencyOverview> getCurrencyOverview(String league) {
-        return currencyOverviews.get(league);
     }
 
     public List<ItemOverview> getItemOverview(String league) {
