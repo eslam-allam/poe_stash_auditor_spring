@@ -52,7 +52,7 @@ public class PriceFetch {
         // TODO: Substitute with API call
         this.leagues = Arrays.asList("Crucible", "standard", "Forbidden Sanctum");
 
-        this.leagues.stream().forEach(this::addOverviews);
+        this.leagues.parallelStream().forEach(this::addOverviews);
         
         Duration duration = Duration.between(start ,Instant.now());
 
@@ -62,7 +62,7 @@ public class PriceFetch {
 
     private void addOverviews(String league) {
         logger.info("Fetching price data for league: {}", league);
-        itemCategories.stream().forEach(category -> {
+        itemCategories.parallelStream().forEach(category -> {
             String finalUrl = UriComponentsBuilder.fromHttpUrl(poeNinjaBaseUrl)
                     .pathSegment(category.getOverViewType().getStringValue()).queryParam("league", league)
                     .queryParam("type", category.getStringValue()).encode().toUriString();

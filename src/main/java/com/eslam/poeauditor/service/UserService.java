@@ -20,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.eslam.poeauditor.constant.PoeApiPath;
 import com.eslam.poeauditor.constant.Scope;
+import com.eslam.poeauditor.constant.StashType;
 import com.eslam.poeauditor.constant.UserRoleCode;
 import com.eslam.poeauditor.domain.UserStashTab;
 import com.eslam.poeauditor.domain.bundle.UserStashTabBundle;
@@ -125,6 +126,6 @@ public class UserService {
         if (userStashTabBundle == null || userStashTabBundle.getUserStashTabs() == null) {
             return new ArrayList<>();
         }
-        return userStashTabBundle.getUserStashTabs();
+        return userStashTabBundle.getUserStashTabs(StashType.implementedStashes(), true);
     }
 }
