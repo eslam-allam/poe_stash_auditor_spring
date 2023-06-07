@@ -30,7 +30,7 @@ public class WebSecurityConfig{
     private static final String[] UN_SECURED_URLs = {
             "/security/authenticate",
             "/security/register",
-            "/poeaccess", "/api-docs","/swagger-ui/*", "/v3/api-docs/*", "/v3/api-docs"
+            "/authorization/granted", "/api-docs","/swagger-ui/*", "/v3/api-docs/*", "/v3/api-docs"
     };
 
     @Autowired
