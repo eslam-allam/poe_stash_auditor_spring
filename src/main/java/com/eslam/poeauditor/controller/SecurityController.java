@@ -20,7 +20,9 @@ import com.eslam.poeauditor.service.JWTService;
 import com.eslam.poeauditor.service.SecurityService;
 import com.eslam.poeauditor.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.net.URISyntaxException;
@@ -33,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,6 +67,7 @@ public class SecurityController {
     private final Logger logger = LogManager.getLogger(getClass());
 
     @SecurityRequirement(name = "base-user")
+    @Operation(description = "Get path of exile login url. This url is redirected to in order to link the user's account")
     @GetMapping(value="/auth/url")
     public AuthUrlDto getAuthUrl(@RequestParam("scope") Scope scope) throws NoSuchAlgorithmException, URISyntaxException, AuthenticationException {
         
@@ -76,6 +80,7 @@ public class SecurityController {
         return DtoAssembler.assemble(authorizeRequest);
     }
 
+    @Operation(description = "Log-in and get JWT token.")
     @PostMapping(value = "/authenticate", produces = MediaType.APPLICATION_JSON_VALUE)
     public JWTTokenDto getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest){
         logger.info("generating authentication token");
@@ -84,8 +89,9 @@ public class SecurityController {
         return jwtService.generateToken(authRequest.getUserName());
     }
 
+    @Operation(description = "Register new user.")
     @PostMapping(value="/register", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDto postMethodName(@RequestBody RegistrationRequest registrationRequest) throws UserAlreadyExistsException, UserRoleNotFoundException {
+    public UserDto postMethodName(@RequestBody @Validated RegistrationRequest registrationRequest) throws UserAlreadyExistsException, UserRoleNotFoundException {
         User user = User.builder().emailId(registrationRequest.getEmail())
         .password(registrationRequest.getPassword()).build();
         return userMapper.assemble(userService.createUser(user, UserRoleCode.BASE_USER));

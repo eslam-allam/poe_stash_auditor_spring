@@ -10,6 +10,7 @@ import com.eslam.poeauditor.mapper.UserMapper;
 import com.eslam.poeauditor.model.User;
 import com.eslam.poeauditor.repository.UserRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ public class AdminController {
     @Autowired
     private UserMapper userMapper;
 
+    @Operation(description = "List all registered users.")
     @GetMapping(value="/users/list")
     public List<UserDto> getAllUsers() {
         return userMapper.assembleUserDtoList(userRepository.findAll());

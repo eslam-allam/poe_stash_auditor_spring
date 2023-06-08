@@ -39,9 +39,8 @@ public class PriceFetch {
     private List<String> leagues;
     private Map<String ,List<ItemOverview>> itemOverviews = new HashMap<>();
 
-
     @PostConstruct
-    @Scheduled(fixedDelayString = "${price.fetch.job.delay.ms}")
+    @Scheduled(fixedDelayString = "${price.fetch.job.delay.ms}", initialDelayString = "${price.fetch.job.delay.ms}")
     private void fetchPrices() {
         logger.info("Fetching prices from POE Ninja...");
         Instant start = Instant.now();
@@ -59,6 +58,7 @@ public class PriceFetch {
 
     private void addOverviews(String league) {
         logger.info("Fetching price data for league: {}", league);
+        List<ItemOverview> tempOverviews = new ArrayList<>();
         itemCategories.parallelStream().forEach(category -> {
             String finalUrl = UriComponentsBuilder.fromHttpUrl(poeNinjaBaseUrl)
                     .pathSegment(category.getOverViewType().getStringValue()).queryParam("league", league)
@@ -69,15 +69,11 @@ public class PriceFetch {
                     ItemOverviewBundle.class);
 
                     if (itemOverviewBundle != null && itemOverviewBundle.hasOverviews()) {
-                        List<ItemOverview> leagueItemOverviews = this.itemOverviews.get(league);
-                        if (leagueItemOverviews == null) {
-                            leagueItemOverviews = new ArrayList<>();
-                        }
-                        leagueItemOverviews.addAll(itemOverviewBundle.getItemOverviews());
-                        this.itemOverviews.put(league, leagueItemOverviews);
+                        tempOverviews.addAll(itemOverviewBundle.getItemOverviews());
                     }
                         
         });
+        this.itemOverviews.put(league, tempOverviews);
     }
 
     public List<String> getLeagues() {

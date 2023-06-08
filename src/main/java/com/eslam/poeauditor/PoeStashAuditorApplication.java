@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -22,6 +23,7 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 @OpenAPIDefinition(info = @Info(title = "POE Stash Auditor API", version = "1.0", description = "An app that filters the user's stash items and sorts them based on price."))
 @SecurityScheme(name = "base-user", scheme = "bearer", type = SecuritySchemeType.HTTP, in =  SecuritySchemeIn.HEADER)
 @SecurityScheme(name = "admin", scheme = "bearer", type = SecuritySchemeType.HTTP, in =  SecuritySchemeIn.HEADER)
+@EnableScheduling
 public class PoeStashAuditorApplication extends SpringBootServletInitializer{
 
 	public static void main(String[] args) {
