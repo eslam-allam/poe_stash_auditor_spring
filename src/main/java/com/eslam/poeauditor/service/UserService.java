@@ -9,16 +9,9 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import com.eslam.poeauditor.constant.PoeApiPath;
 import com.eslam.poeauditor.constant.Scope;
 import com.eslam.poeauditor.constant.StashType;
 import com.eslam.poeauditor.constant.UserRoleCode;
@@ -30,7 +23,6 @@ import com.eslam.poeauditor.domain.bundle.UserStashTabBundle;
 import com.eslam.poeauditor.exception.UserAlreadyExistsException;
 import com.eslam.poeauditor.exception.UserNotFoundException;
 import com.eslam.poeauditor.exception.UserRoleNotFoundException;
-import com.eslam.poeauditor.jobs.scheduled.PriceFetch;
 import com.eslam.poeauditor.model.AuthorizationGrant;
 import com.eslam.poeauditor.model.PoeUserDetails;
 import com.eslam.poeauditor.model.User;
@@ -40,6 +32,7 @@ import com.eslam.poeauditor.repository.UserRoleRepository;
 
 
 @Service
+@DependsOn()
 public class UserService {
 
     private final Logger logger = LogManager.getLogger(getClass());
@@ -54,12 +47,12 @@ public class UserService {
     private UserRoleRepository userRoleRepository;
 
     @Autowired
-    private PriceFetch priceFetch;
+    private ItemService itemService;
 
-    @Value("${poe.api.url}")
-    private String poeApiUrl;
+    @Autowired
+    private PoeApiService poeApiService;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    
 
     public User createUser(User user, UserRoleCode userRoleCode) throws UserAlreadyExistsException, UserRoleNotFoundException {
         Optional<User> theUser = userRepository.findByEmailId(user.getEmailId());
@@ -98,6 +91,15 @@ public class UserService {
         return user.get();
     }
 
+    public User getByUserRoleCode(UserRoleCode userRoleCode) {
+        Optional<User> user = userRepository.findByUserRolesUserRoleCode(userRoleCode);
+        if (!user.isPresent()) {
+            throw new UserNotFoundException(
+                String.format("Could not find a user with the specified user role code: %s", userRoleCode));
+        }
+        return user.get();
+    }
+
     public User saveUser(User user) {
         return userRepository.save(user); 
     }
@@ -113,18 +115,12 @@ public class UserService {
         if (authorizationGrant.get().getExpiresAt().before(Date.from(Instant.now()))) {
             throw new IllegalAccessError("User POE token expired. Please reauthenticate with poe account");
         }
-        if (priceFetch.getLeagues().stream().noneMatch(l -> l.equals(league))) {
+        if (itemService.getLeagues().stream().noneMatch(l -> l.equals(league))) {
             throw new IllegalArgumentException("Provided league is invalid");
         }
 
-        String url = UriComponentsBuilder.fromHttpUrl(poeApiUrl).pathSegment(PoeApiPath.STASH.getStringValue())
-        .pathSegment(league).toUriString();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setBearerAuth(authorizationGrant.get().getAccessToken());
 
-        HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
-
-        UserStashTabBundle userStashTabBundle = restTemplate.exchange(url, HttpMethod.GET, httpEntity, UserStashTabBundle.class).getBody();
+        UserStashTabBundle userStashTabBundle = poeApiService.requestUserStashTabs(authorizationGrant.get(), league);
 
         if (userStashTabBundle == null || userStashTabBundle.getUserStashTabs() == null) {
             return new ArrayList<>();
@@ -143,23 +139,16 @@ public class UserService {
         if (authorizationGrant.get().getExpiresAt().before(Date.from(Instant.now()))) {
             throw new IllegalAccessError("User POE token expired. Please reauthenticate with poe account");
         }
-        if (priceFetch.getLeagues().stream().noneMatch(l -> l.equals(league))) {
+        if (itemService.getLeagues().stream().noneMatch(l -> l.equals(league))) {
             throw new IllegalArgumentException("Provided league is invalid");
         }
 
-        String url = UriComponentsBuilder.fromHttpUrl(poeApiUrl).pathSegment(PoeApiPath.STASH.getStringValue())
-        .pathSegment(league).pathSegment(stashId).toUriString();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setBearerAuth(authorizationGrant.get().getAccessToken());
-
-        HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
-
-        UserStashItemBundle userStashItemBundle = restTemplate.exchange(url, HttpMethod.GET, httpEntity, UserStashItemBundle.class).getBody();
+        UserStashItemBundle userStashItemBundle = poeApiService.requestUserStashItems(authorizationGrant.get(), league, stashId);
 
         if (userStashItemBundle == null || userStashItemBundle.getItemStash().getUserStashItems() == null) {
             return new ArrayList<>();
         }
-        List<ItemOverview> itemOverviews = priceFetch.getItemOverview(league);
+        List<ItemOverview> itemOverviews = itemService.getItemOverview(league);
         List<UserStashItem> userStashItems = new ArrayList<>();
         userStashItemBundle.getItemStash().getUserStashItems().parallelStream().forEachOrdered(item -> {
             Optional<ItemOverview> itemOverview = itemOverviews.parallelStream()

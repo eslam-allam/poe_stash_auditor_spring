@@ -12,14 +12,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eslam.poeauditor.domain.LeagueDto;
 import com.eslam.poeauditor.domain.UserStashItem;
 import com.eslam.poeauditor.domain.UserStashTab;
 import com.eslam.poeauditor.model.User;
+import com.eslam.poeauditor.service.ItemService;
 import com.eslam.poeauditor.service.SecurityService;
 import com.eslam.poeauditor.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -35,6 +36,9 @@ public class UserController {
 
     @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    private ItemService itemService;
     
     @Operation(description = "Get a list of stash tabs for the logged in user")
     @GetMapping(value="/stash/list")
@@ -51,6 +55,12 @@ public class UserController {
         
         User user = securityService.getLoggedInUser();
         return userService.getUserStashTabItems(user, league, stashId);
+    }
+    
+    @Operation(description = "Get a list of all available leagues.")
+    @GetMapping(value="/league/list")
+    public List<LeagueDto> getLeagues() {
+        return itemService.getLeagues();
     }
     
 }

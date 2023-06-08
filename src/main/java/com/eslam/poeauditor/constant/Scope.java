@@ -5,15 +5,22 @@ import java.util.List;
 import java.util.Optional;
 
 public enum Scope implements StringValued{
-    PROFILE("account:profile"), STASHES("account:stashes")
-    , LEAGUES("service:leagues"), LEAGES_LADDER("service:leagues:ladder")
-    , PVP_MATCHES("service:pvp_matches"), PVP_MATCHES_LADDER("service:pvp_matches:ladder")
-    , PUBLIC_STASH_API("service:psapi");
+    PROFILE("account:profile", ScopeType.ACCOUNT, true), 
+    STASHES("account:stashes", ScopeType.ACCOUNT, true),
+    LEAGUES("service:leagues", ScopeType.SERVICE, true), 
+    LEAGES_LADDER("service:leagues:ladder", ScopeType.SERVICE, false), 
+    PVP_MATCHES("service:pvp_matches", ScopeType.SERVICE, false), 
+    PVP_MATCHES_LADDER("service:pvp_matches:ladder", ScopeType.SERVICE, false), 
+    PUBLIC_STASH_API("service:psapi", ScopeType.SERVICE, false);
 
     private final String scopeName;
+    private final ScopeType scopeType;
+    private final Boolean available;
 
-    private Scope(String scope) {
+    private Scope(String scope, ScopeType scopeType, Boolean available) {
         this.scopeName = scope;
+        this.scopeType = scopeType;
+        this.available = available;
     }
 
     @Override
@@ -21,11 +28,20 @@ public enum Scope implements StringValued{
         return scopeName;
     }
 
+    public ScopeType getScopeType() {
+        return scopeType;
+    }
+
+    public Boolean isAvailable() {
+        return available;
+    }
+
     public static List<Scope> services() {
-        return Arrays.asList(LEAGUES, LEAGES_LADDER, PVP_MATCHES, PVP_MATCHES_LADDER, PUBLIC_STASH_API);
+        return Arrays.stream(Scope.values()).filter(s -> s.getScopeType().equals(ScopeType.SERVICE)).toList();
     }
     public static List<Scope> availableServices() {
-        return Arrays.asList();
+        return Arrays.stream(Scope.values()).filter(s -> s.getScopeType().equals(ScopeType.SERVICE)
+         && s.isAvailable()).toList();
     }
 
     public static Optional<Scope> getScope(String scope) {

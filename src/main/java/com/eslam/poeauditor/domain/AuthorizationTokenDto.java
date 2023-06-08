@@ -1,7 +1,6 @@
 package com.eslam.poeauditor.domain;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
 
@@ -39,7 +38,7 @@ public class AuthorizationTokenDto {
 
     public void setExpiresAt(Long expiresIn) {
         if (expiresIn == null) {
-            this.expiresAt = Date.from(Instant.now().plus(1, ChronoUnit.FOREVER));
+            this.expiresAt = new Date(253402214400000L);
         }
         else{
             this.expiresAt = Date.from(Instant.now().plusSeconds(expiresIn));

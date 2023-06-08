@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.eslam.poeauditor.domain.UserDto;
 import com.eslam.poeauditor.mapper.UserMapper;
-import com.eslam.poeauditor.model.User;
 import com.eslam.poeauditor.repository.UserRepository;
 
 import io.swagger.v3.oas.annotations.Operation;

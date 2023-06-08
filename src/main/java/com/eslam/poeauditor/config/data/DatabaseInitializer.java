@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 
@@ -31,10 +33,12 @@ import com.eslam.poeauditor.request.TokenRequest;
 import com.eslam.poeauditor.service.SecurityService;
 import com.eslam.poeauditor.service.UserService;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 
 @Component
-public class DatabaseInitializer implements ApplicationRunner{
+@DependsOnDatabaseInitialization
+public class DatabaseInitializer{
 
     private final Logger logger = LogManager.getLogger(getClass());
 
@@ -70,9 +74,9 @@ public class DatabaseInitializer implements ApplicationRunner{
 
     
 
-    @Override
+    @PostConstruct
     @Transactional
-    public void run(ApplicationArguments args) throws DatasourceInitializationException, UserAlreadyExistsException, UserRoleNotFoundException, RestClientException, IllegalArgumentException, IllegalAccessException {
+    public void run() throws DatasourceInitializationException, UserAlreadyExistsException, UserRoleNotFoundException, RestClientException, IllegalArgumentException, IllegalAccessException {
         logger.info("Initializing default admin credentials.");
         
         Optional<UserRole> userRole = userRoleRepository.findByUserRoleCode(UserRoleCode.ADMIN);
